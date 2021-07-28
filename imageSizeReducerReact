@@ -1,0 +1,29 @@
+import Compress from "react-image-file-resizer";
+
+const onFileResize = e => {
+  const file = e.target.files[0];
+
+  Compress.imageFileResizer(
+  file, // the file from input
+  660, // width
+  780, // height
+  "WEBP", // compress format WEBP, JPEG, PNG
+  90, // quality
+  0, // rotation
+  (uri) => {
+      console.log(uri);
+      setNewDoc(uri)
+      // You upload logic goes here
+  },
+  "blob" // blob or base64 default base64
+  );
+}
+    
+    //JSX
+    
+    <input
+      type="file"
+      accept="image/png, image/jpeg, image/jpg"
+      onChange={(e) => onFileResize(e)}
+      required
+    />
