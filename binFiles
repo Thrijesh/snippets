@@ -1,0 +1,29 @@
+{/* <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postCasteCertificate(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>CASTE CERTIFICATE</strong></CLabel>
+                    </CCol>
+                    {
+                        docStatus && docStatus.singleDocs[1].rejected === true && docStatus.singleDocs[1].verified === true ?
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redCasteCertificate(e)}
+                                            required
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={casteCertificateLoading}>{casteCertificateLoading ? "Resizing" : "Submit"}</CButton>
+                                    {docStatus && docStatus.singleDocs[1].verified && docStatus && docStatus.singleDocs[1].rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>CasteCertificate Rejected</CBadge> : null}
+                                </CCol>
+                            </>
+                            : <CCol>
+                                <CBadge color="success">Your Caste Certificate Document Has been Approved</CBadge>
+                            </CCol>
+                    }
+                </CFormGroup>
+            </CForm>
