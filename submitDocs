@@ -1,0 +1,1299 @@
+import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import './doc.scss'
+import {
+    CBadge,
+    CButton,
+    CCol,
+    CForm,
+    CLabel,
+    CFormGroup,
+    CInputFile,
+    CProgress
+} from "@coreui/react";
+import Compress from "react-image-file-resizer";
+
+function DocumentSubmission() {
+
+    // const [ docType, setDocType ] = useState('AdhaarCard')
+    // const [ multiDocType, setMultiDocType ] = useState('AdhaarOfParents')
+    const [doc, setDoc] = useState()
+    // const [ multiDoc, setMultiDoc ] = useState([])
+    const [student, setStudent] = useState("60ccb9f8b5b8e9190811a9cc")
+    const [adhaar, setAdhaar] = useState()
+    const [casteCertificate, setCasteCertificate] = useState()
+    const [bankPassbook, setBankPassbook] = useState()
+    const [incomeCertificate, setIncomeCertificate] = useState()
+    const [adhaarOfParents, setAdhaarOfParents] = useState()
+    const [SSCAndHSCMarksCards, setSSCAndHSCMarksCards] = useState()
+    const [sportsRelatedDocs, setSportsRelatedDocs] = useState()
+    const [feeReceipt, setFeeReceipt] = useState()
+    const [otherDocs, setOtherDocs] = useState()
+    const [progress, setProgress] = useState(0)
+    const [loading, setLoading] = useState(false)
+    const [adhaarLoading, setAdhaarLoading] = useState(false)
+    const [casteCertificateLoading, setCasteCertificateLoading] = useState(false)
+    const [bankPassbookLoading, setBankPassbookLoading] = useState(false)
+    const [incomeCertificateLoading, setIncomeCertificateLoading] = useState(false)
+    const [adhaarOfParentsLoading, setAdhaarOfParentsLoading] = useState(false)
+    const [SSCAndHSCMarksCardsLoading, setSSCAndHSCMarksCardsLoading] = useState(false)
+    const [sportsRelatedDocsLoading, setSportsRelatedDocsLoading] = useState(false)
+    const [feeReceiptLoading, setFeeReceiptLoading] = useState(false)
+    const [otherDocsLoading, setOtherDocsLoading] = useState(false)
+    const [docStatus, setDocStatus] = useState()
+    const [adhaarOfParentsPhotoOne, setAdhaarOfParentsPhotoOne] = useState()
+    const [adhaarOfParentsphotoTwo, setAdhaarOfParentsPhotoTwo] = useState()
+    const [SSCAndHSCMarksCardsPhotoOne, setSSCAndHSCMarksCardsPhotoOne] = useState()
+    const [SSCAndHSCMarksCardsphotoTwo, setSSCAndHSCMarksCardsPhotoTwo] = useState()
+    const [sportsDocPhotoOne, setSportsDocPhotoOne] = useState()
+    const [sportsDocPhotoTwo, setSportsDocPhotoTwo] = useState()
+    const [sportsDocPhotoThree, setSportsDocPhotoThree] = useState()
+    // const [newDoc, setNewDoc] = useState()
+    // const [newMulDoc, setNewMulDoc] = useState([])
+    const ref = useRef();
+
+    console.log(adhaarOfParents)
+    console.log(SSCAndHSCMarksCards)
+    console.log(sportsRelatedDocs)
+    // const data = new FormData()
+
+    // data.append('Document_type', docType)
+    // data.append('singleDoc', doc)
+    // data.append('student', student)
+
+
+    // const multiData = new FormData()
+
+    // if(multiDoc.length > 0) {
+    //     for (let i = 0; i < multiDoc.length; i++) {
+    //        multiData.append('multipleDocs', multiDoc[i])
+    //     }
+    // }
+
+    // multiData.append('Document_type', multiDocType)
+
+    // multiData.append('student', student)
+
+    // const post = (e) => {
+    //     e.preventDefault()
+    //     axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+    // }
+
+    // const postmulti = (e) => {
+    //     e.preventDefault()
+    //     axios.post(`http://localhost:5000/api/add-docs/multi-docs`, multiData)
+    // }
+
+    //console.log(data)
+    // AdhaarCard","CasteCertificate", "BankPassbook", "IncomeCertificate AdhaarOfParents","SSCAndHSCMarksCards", "OthersDocs", "SportsRelatedDocs", "FeeReceipt
+
+
+    console.log(progress)
+
+    const redAdhaarOfParents = (e) => {
+        e.preventDefault()
+        setAdhaarOfParentsLoading(true)
+
+        if (e.target.files.length > 2) {
+            alert("Only Two Files are allowed to upload!")
+            setAdhaarOfParentsLoading(false)
+            return e.target.value = null
+        } else {
+            const fileOne = e.target.files[0]
+            const fileTwo = e.target.files[1]
+            if (fileOne !== undefined) {
+                Compress.imageFileResizer(
+                    fileOne,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
+                        setAdhaarOfParentsPhotoOne(uri)
+                        setAdhaarOfParentsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+
+            if (fileTwo !== undefined) {
+                setAdhaarOfParentsLoading(true)
+                Compress.imageFileResizer(
+                    fileTwo,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, '22222222222222222222222222222222222222222222222222')
+                        setAdhaarOfParentsPhotoTwo(uri)
+                        setAdhaarOfParentsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+        }
+        if (!e.target.files.length) {
+            setAdhaarOfParentsLoading(false)
+        }
+    }
+
+
+    const redSSCAndHSCMarksCards = (e) => {
+        e.preventDefault()
+        setSSCAndHSCMarksCardsLoading(true)
+
+        if (e.target.files.length > 2) {
+            alert("Only Two Files are allowed to upload!")
+            setSSCAndHSCMarksCardsLoading(false)
+            return e.target.value = null
+        } else {
+            const fileOne = e.target.files[0]
+            const fileTwo = e.target.files[1]
+            if (fileOne !== undefined) {
+                Compress.imageFileResizer(
+                    fileOne,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
+                        setSSCAndHSCMarksCardsPhotoOne(uri)
+                        setSSCAndHSCMarksCardsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+
+            if (fileTwo !== undefined) {
+                setSSCAndHSCMarksCardsLoading(true)
+                Compress.imageFileResizer(
+                    fileTwo,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, '22222222222222222222222222222222222222222222222222')
+                        setSSCAndHSCMarksCardsPhotoTwo(uri)
+                        setSSCAndHSCMarksCardsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+        }
+        if (!e.target.files.length) {
+            setSSCAndHSCMarksCardsLoading(false)
+        }
+    }
+
+    const redSportsRelatedDocs = (e) => {
+        e.preventDefault()
+        setSportsRelatedDocsLoading(true)
+
+        if (e.target.files.length > 3) {
+            alert("Only Three Files are allowed to upload!")
+            setSportsRelatedDocsLoading(false)
+            return e.target.value = null
+        } else {
+            const fileOne = e.target.files[0]
+            const fileTwo = e.target.files[1]
+            const fileThree = e.target.files[2]
+            if (fileOne !== undefined) {
+                Compress.imageFileResizer(
+                    fileOne,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
+                        setSportsDocPhotoOne(uri)
+                        setSportsRelatedDocsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+
+            if (fileTwo !== undefined) {
+                setSportsRelatedDocsLoading(true)
+                Compress.imageFileResizer(
+                    fileTwo,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, '22222222222222222222222222222222222222222222222222')
+                        setSportsDocPhotoTwo(uri)
+                        setSportsRelatedDocsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+
+            if (fileThree !== undefined) {
+                setSportsRelatedDocsLoading(true)
+                Compress.imageFileResizer(
+                    fileThree,
+                    660,
+                    780,
+                    "WEBP",
+                    90,
+                    0,
+                    (uri) => {
+                        console.log(uri, '33333333333333333333333333333333333')
+                        setSportsDocPhotoThree(uri)
+                        setSportsRelatedDocsLoading(false)
+                    },
+                    "blob"
+                );
+            }
+        }
+        if (!e.target.files.length) {
+            setSportsRelatedDocsLoading(false)
+        }
+    }
+
+    // const redAdhaarOfParents = async (e) => {
+    //     e.preventDefault()
+    //     setAdhaarOfParentsLoading(true)
+
+    //     const file = e.target.files[0]
+    //     if (file) {
+    //         await Compress.imageFileResizer(
+    //             file,
+    //             660,
+    //             780,
+    //             "WEBP",
+    //             90,
+    //             0,
+    //             (uri) => {
+    //                 console.log(uri)
+    //                 setAdhaarOfParents(uri)
+    //                 setAdhaarOfParentsLoading(false)
+    //             },
+    //             "blob"
+    //         );
+    //     } else {
+    //         setAdhaarOfParentsLoading(false)
+    //     }
+    // }
+    // const redSSCAndHSCMarksCards = (e) => {
+    //     e.preventDefault()
+    //     setSSCAndHSCMarksCardsLoading(true)
+
+    //     const file = e.target.files[0]
+    //     if (file) {
+    //         Compress.imageFileResizer(
+    //             file,
+    //             660,
+    //             780,
+    //             "WEBP",
+    //             90,
+    //             0,
+    //             (uri) => {
+    //                 setSSCAndHSCMarksCards(uri)
+    //                 setSSCAndHSCMarksCardsLoading(false)
+    //             },
+    //             "blob"
+    //         );
+    //     } else {
+    //         setSSCAndHSCMarksCardsLoading(false)
+    //     }
+    // }
+
+    const postAdhaarOfParents = async (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "AdhaarOfParents")
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        if (adhaarOfParentsPhotoOne !== undefined) {
+            data.append('multipleDocs', adhaarOfParentsPhotoOne)
+        }
+        if (adhaarOfParentsphotoTwo !== undefined) {
+            data.append('multipleDocs', adhaarOfParentsphotoTwo)
+        }
+        await axios.post(`http://localhost:5000/api/add-docs/multi-doc`, data)
+        console.log(adhaarOfParentsPhotoOne)
+        console.log(adhaarOfParentsphotoTwo)
+    }
+
+    const postSSCAndHSCMarksCards = async (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "SSCAndHSCMarksCards")
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        if (SSCAndHSCMarksCardsPhotoOne !== undefined) {
+            data.append('multipleDocs', SSCAndHSCMarksCardsPhotoOne)
+        }
+        if (SSCAndHSCMarksCardsphotoTwo !== undefined) {
+            data.append('multipleDocs', SSCAndHSCMarksCardsphotoTwo)
+        }
+        await axios.post(`http://localhost:5000/api/add-docs/multi-doc`, data)
+        console.log(SSCAndHSCMarksCardsPhotoOne)
+        console.log(SSCAndHSCMarksCardsphotoTwo)
+    }
+
+
+    const postSportsRelatedDocs = async (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "SportsRelatedDocs")
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        if (sportsDocPhotoOne !== undefined) {
+            data.append('multipleDocs', sportsDocPhotoOne)
+        }
+        if (sportsDocPhotoTwo !== undefined) {
+            data.append('multipleDocs', sportsDocPhotoTwo)
+        }
+        if (sportsDocPhotoThree !== undefined) {
+            data.append('multipleDocs', sportsDocPhotoThree)
+        }
+        await axios.post(`http://localhost:5000/api/add-docs/multi-doc`, data)
+        console.log(sportsDocPhotoOne)
+        console.log(sportsDocPhotoTwo)
+        console.log(sportsDocPhotoThree)
+    }
+
+    const redAdhaarCard = (e) => {
+        e.preventDefault()
+        setAdhaarLoading(true)
+
+        const file = e.target.files[0]
+        if (file) {
+            Compress.imageFileResizer(
+                file,
+                660,
+                780,
+                "WEBP",
+                90,
+                0,
+                (uri) => {
+                    console.log(uri)
+                    setAdhaar(uri)
+                    setAdhaarLoading(false)
+                },
+                "blob"
+            );
+        } else {
+            setAdhaarLoading(false)
+        }
+    }
+
+    const redCasteCertificate = (e) => {
+        e.preventDefault()
+        setCasteCertificateLoading(true)
+
+        const file = e.target.files[0]
+        if (file) {
+            Compress.imageFileResizer(
+                file,
+                660,
+                780,
+                "WEBP",
+                90,
+                0,
+                (uri) => {
+                    console.log(uri)
+                    setCasteCertificate(uri)
+                    setCasteCertificateLoading(false)
+                },
+                "blob"
+            );
+        } else {
+            setCasteCertificateLoading(false)
+        }
+    }
+    const redBankPassbook = (e) => {
+        e.preventDefault()
+        setBankPassbookLoading(true)
+        const file = e.target.files[0]
+        if (file) {
+            Compress.imageFileResizer(
+                file,
+                660,
+                780,
+                "WEBP",
+                90,
+                0,
+                (uri) => {
+                    console.log(uri)
+                    setBankPassbook(uri)
+                    setBankPassbookLoading(false)
+                },
+                "blob"
+            );
+        } else {
+            setBankPassbookLoading(false)
+        }
+    }
+    const redIncomeCer = (e) => {
+        e.preventDefault()
+        setIncomeCertificateLoading(true)
+
+        const file = e.target.files[0]
+        if (file) {
+            Compress.imageFileResizer(
+                file,
+                660,
+                780,
+                "WEBP",
+                90,
+                0,
+                (uri) => {
+                    setIncomeCertificate(uri)
+                    setIncomeCertificateLoading(false)
+                },
+                "blob"
+            );
+        } else {
+            setIncomeCertificateLoading(false)
+        }
+    }
+    // const redSportsRelatedDocs = (e) => {
+    //     e.preventDefault()
+    //     setSportsRelatedDocsLoading(true)
+
+    //     const file = e.target.files[0]
+    //     if (file) {
+    //         Compress.imageFileResizer(
+    //             file,
+    //             660,
+    //             780,
+    //             "WEBP",
+    //             90,
+    //             0,
+    //             (uri) => {
+    //                 setSportsRelatedDocs(uri)
+    //                 setSportsRelatedDocsLoading(false)
+    //             },
+    //             "blob"
+    //         )
+    //     } else {
+    //         setSportsRelatedDocsLoading(false)
+    //     }
+    // }
+    const redFeeReceipt = (e) => {
+        e.preventDefault()
+        setFeeReceiptLoading(true)
+
+        const file = e.target.files[0]
+        if (file) {
+            Compress.imageFileResizer(
+                file,
+                660,
+                780,
+                "WEBP",
+                90,
+                0,
+                (uri) => {
+                    setFeeReceipt(uri)
+                    setFeeReceiptLoading(false)
+                },
+                "blob"
+            )
+        } else {
+            setFeeReceiptLoading(false)
+        }
+    }
+    const redOtherDocs = (e) => {
+        e.preventDefault()
+        setOtherDocsLoading(true)
+
+        const file = e.target.files[0]
+        if (file) {
+            Compress.imageFileResizer(
+                file,
+                660,
+                780,
+                "WEBP",
+                90,
+                0,
+                (uri) => {
+                    setOtherDocs(uri)
+                    setOtherDocsLoading(false)
+                },
+                "blob"
+            )
+        } else {
+            setOtherDocsLoading(false)
+        }
+    }
+
+    const postAdhaarCard = (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "AdhaarCard")
+        data.append('singleDoc', adhaar)
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+    const postCasteCertificate = (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "CasteCertificate")
+        data.append('singleDoc', casteCertificate)
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+    const postBankPassbook = async (e) => {
+        e.preventDefault()
+
+        const data = new FormData()
+        data.append('Document_type', "BankPassbook")
+        data.append('singleDoc', bankPassbook)
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        await axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+    }
+    const postIncomeCertificate = async (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "IncomeCertificate")
+        data.append('singleDoc', incomeCertificate)
+        data.append('student', student)
+        data.append('stud_regNo', "66")
+        await axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+    }
+    // const postAdhaarOfParents = async (e) => {
+    //     e.preventDefault()
+    //     let data = new FormData()
+    //     data.append('Document_type', "AdhaarOfParents")
+    //     data.append('student', student)
+    //     data.append('stud_regNo', "66")
+    //     data.append('multipleDocs', adhaarOfParents)
+    //     await axios.post(`http://localhost:5000/api/add-docs/multi-docs`, data)
+    // }
+    // const postSSCAndHSCMarksCards = async (e) => {
+    //     e.preventDefault()
+    //     let data = new FormData()
+    //     data.append('Document_type', "SSCAndHSCMarksCards")
+    //     data.append('student', student)
+    //     data.append('stud_regNo', "66")
+    //     data.append('multipleDocs', SSCAndHSCMarksCards)
+    //     await axios.post(`http://localhost:5000/api/add-docs/multi-docs`, data)
+    //         .then(res => {
+    //             console.log(res.data)
+    //         })
+    //         .catch(err => {
+    //             console.log(err)
+    //         })
+    // }
+    // const postSportsRelatedDocs = async (e) => {
+    //     e.preventDefault()
+    //     let data = new FormData()
+    //     data.append('Document_type', "SportsRelatedDocs")
+    //     data.append('student', student)
+    //     data.append('stud_regNo', "66")
+    //     data.append('multipleDocs', sportsRelatedDocs)
+    //     await axios.post(`http://localhost:5000/api/add-docs/multi-docs`, data)
+    // }
+    const postFeeReceipt = (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "FeeReceipt")
+        data.append('student', student)
+        data.append('fee', feeReceipt)
+        data.append('stud_regNo', "66")
+
+        const options = {
+            onUploadProgress: (progressEvent) => {
+                const { loaded, total } = progressEvent
+                let percent = Math.floor((loaded * 100) / total)
+                console.log(`${loaded}kb of ${total}kb | ${percent}%`)
+                setProgress(percent)
+            }
+        }
+        setLoading(true)
+        axios.post(`http://localhost:5000/api/add-docs/fee-recipt`, data, options)
+            .then(res => {
+                console.log(res.data)
+                setLoading(false)
+            })
+            .catch(err => {
+                console.log(err)
+                setLoading(false)
+            })
+        // onUploadProgress(e)
+    }
+    const postOtherDocs = (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', "OtherDocs")
+        data.append('student', student)
+        data.append('otherDocs', otherDocs)
+        data.append('stud_regNo', "66")
+
+        axios.post(`http://localhost:5000/api/add-docs/other-docs`, data)
+    }
+
+    const getDocStatus = async () => {
+        await axios.post(`http://localhost:5000/api/get-status`, { student_regNo: 66 })
+            .then(res => {
+                console.log(res.data)
+                setDocStatus(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+                setDocStatus(null)
+            })
+    }
+
+    useEffect(() => {
+        getDocStatus()
+        console.log('USEEFFECT')
+    }, [])
+
+    // const onFileResize = e => {
+    //     const file = e.target.files[0];
+
+    //     Compress.imageFileResizer(
+    //         file, // the file from input
+    //         660, // width
+    //         780, // height
+    //         "WEBP", // compress format WEBP, JPEG, PNG
+    //         90, // quality
+    //         0, // rotation
+    //         (uri) => {
+    //             console.log(uri);
+    //             setNewDoc(uri)
+    //             // You upload logic goes here
+    //         },
+    //         "blob" // blob or base64 default base64
+    //     );
+    // }
+
+
+    // const onFileResizeMulti = e => {
+    //     e.preventDefault()
+
+    //     if (adhaarOfParents.length > 0) {
+    //         for (let i = 0; i < adhaarOfParents.length; i++) {
+    //             Compress.imageFileResizer(
+    //                 adhaarOfParents[i], // the file from input
+    //                 660, // width
+    //                 780, // height
+    //                 "WEBP", // compress format WEBP, JPEG, PNG
+    //                 90, // quality
+    //                 0, // rotation
+    //                 (uri) => {
+    //                     console.log(uri)
+    //                     // You upload logic goes here
+    //                     var data = new FormData()
+    //                     data.append('Document_type', "AdhaarOfParents")
+    //                     data.append('student', student)
+    //                     data.append('stud_regNo', "66")
+    //                     data.append('multipleDocs', uri)
+    //                     axios.post(`http://localhost:5000/api/add-docs/multi-docs`, data)
+    //                 },
+    //                 "blob" // blob or base64 default base64
+    //             )
+    //         }
+    //     }
+    // }
+
+    const findAdhaarStatus = docStatus && docStatus.singleDocs.find(el => {
+        return el.name === 'AdhaarCard'
+    })
+
+    const findCasteCertificateStatus = docStatus && docStatus.singleDocs.find(el => {
+        return el.name === 'CasteCertificate'
+    })
+
+    const findBankPassbookStatus = docStatus && docStatus.singleDocs.find(el => {
+        return el.name === 'BankPassbook'
+    })
+
+    const findIncomeCertificateStatus = docStatus && docStatus.singleDocs.find(el => {
+        return el.name === 'IncomeCertificate'
+    })
+
+    const findAdhaarOfParentsStatus = docStatus && docStatus.multipleDocs.find(el => {
+        return el.Document_type === 'AdhaarOfParents'
+    })
+
+    const findSSCAndHSCMarksCards = docStatus && docStatus.multipleDocs.find(el => {
+        return el.Document_type === 'SSCAndHSCMarksCards'
+    })
+
+    const findSportsRelatedDocs = docStatus && docStatus.multipleDocs.find(el => {
+        return el.Document_type === 'SportsRelatedDocs'
+    })
+
+    console.log(findAdhaarStatus)
+    console.log(findCasteCertificateStatus)
+    console.log(findBankPassbookStatus)
+    console.log(findIncomeCertificateStatus)
+    console.log(findAdhaarOfParentsStatus)
+
+    return (
+        <>
+            {/* <input 
+                type="file" 
+                onChange={(e) => addTwoPhoto(e)} 
+                required
+                accept="image/png, image/jpeg, image/jpg"
+                multiple
+                required />
+                <button onClick={(e) => send(e)}>submit</button> */}
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postAdhaarCard(e)}>
+                <header className="label_header">DOCUMENT SUBMISSION</header>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>ADHAAR CARD</strong></CLabel>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findAdhaarStatus !== undefined ?
+                            // docStatus && docStatus.singleDocs[0].rejected === true && docStatus.singleDocs[0].verified === true ?
+                            findAdhaarStatus !== undefined && findAdhaarStatus.rejected === true && findAdhaarStatus.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redAdhaarCard(e)}
+                                                required
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={adhaarLoading}>{adhaarLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findAdhaarStatus.verified && findAdhaarStatus.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>AdhaarCard Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findAdhaarStatus.rejected === false && findAdhaarStatus.verified === false ?
+                                    <CCol>
+                                        <CBadge color="warning">Your Adhaar Document Approval is Pending</CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol>
+                                        <CBadge color="success">Your Adhaar Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redAdhaarCard(e)}
+                                            required
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={adhaarLoading}>{adhaarLoading ? "Resizing" : "Submit"}</CButton>
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postCasteCertificate(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>CASTE CERTIFICATE</strong></CLabel>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findCasteCertificateStatus !== undefined ?
+                            findCasteCertificateStatus !== undefined && findCasteCertificateStatus && findCasteCertificateStatus.rejected === true && findCasteCertificateStatus && findCasteCertificateStatus.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redCasteCertificate(e)}
+                                                required
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={casteCertificateLoading}>{casteCertificateLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findCasteCertificateStatus && findCasteCertificateStatus.verified && findCasteCertificateStatus && findCasteCertificateStatus.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>CasteCertificate Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findCasteCertificateStatus.rejected === false && findCasteCertificateStatus.verified === false ?
+                                    <CCol>
+                                        <CBadge color="warning">Your Caste Certificate Document Approval is Pending</CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol>
+                                        <CBadge color="success">Your Caste Certificate Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redCasteCertificate(e)}
+                                            required
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={casteCertificateLoading}>{casteCertificateLoading ? "Resizing" : "Submit"}</CButton>
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postBankPassbook(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>BANK PASSBOOK</strong></CLabel>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findBankPassbookStatus !== undefined ?
+                            findBankPassbookStatus !== undefined && findBankPassbookStatus && findBankPassbookStatus.rejected === true && findBankPassbookStatus && findBankPassbookStatus.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redBankPassbook(e)}
+                                                required
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={bankPassbookLoading}>{bankPassbookLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findBankPassbookStatus && findBankPassbookStatus.verified && findBankPassbookStatus && findBankPassbookStatus.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>BankPassbook Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findBankPassbookStatus.rejected === false && findBankPassbookStatus.verified === false ?
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="warning">Your BankPassbook Document Approval is Pending</CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="success">Your BankPassbook Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redBankPassbook(e)}
+                                            required
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={bankPassbookLoading}>{bankPassbookLoading ? "Resizing" : "Submit"}</CButton>
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postIncomeCertificate(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>INCOME CERTIFICATE</strong></CLabel>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findIncomeCertificateStatus !== undefined ?
+                            findIncomeCertificateStatus !== undefined && findIncomeCertificateStatus.rejected === true && findIncomeCertificateStatus.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redIncomeCer(e)}
+                                                required
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={incomeCertificateLoading}>{incomeCertificateLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findIncomeCertificateStatus.verified && findIncomeCertificateStatus.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>Caste Certificate Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findIncomeCertificateStatus.rejected === false && findIncomeCertificateStatus.verified === false ?
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="warning">Your Income Certificate Document Approval is Pending</CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="success">Your Income Certificate Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redIncomeCer(e)}
+                                            required
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={incomeCertificateLoading}>{incomeCertificateLoading ? "Resizing" : "Submit"}</CButton>
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postAdhaarOfParents(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>ADHAAR CARD OF PARENTS</strong></CLabel>
+                        <CBadge color="info">Upload TWO files or Only One</CBadge>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findAdhaarOfParentsStatus !== undefined ?
+                            findAdhaarOfParentsStatus !== undefined && findAdhaarOfParentsStatus && findAdhaarOfParentsStatus.rejected === true && findAdhaarOfParentsStatus && findAdhaarOfParentsStatus.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redAdhaarOfParents(e)}
+                                                required
+                                                multiple
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={adhaarOfParentsLoading}>{adhaarOfParentsLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findAdhaarOfParentsStatus && findAdhaarOfParentsStatus.verified && findAdhaarOfParentsStatus.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>Caste Certificate Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findAdhaarOfParentsStatus.rejected === false && findAdhaarOfParentsStatus.verified === false ?
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="warning">Your Adhaar Parents Document Approval is Pending</CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="success">Your Adhaar Parents Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redAdhaarOfParents(e)}
+                                            required
+                                            multiple
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={adhaarOfParentsLoading}>{adhaarOfParentsLoading ? "Resizing" : "Submit"}</CButton>
+                                    {findAdhaarOfParentsStatus && findAdhaarOfParentsStatus.verified && findAdhaarOfParentsStatus.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>Caste Certificate Rejected</CBadge> : null}
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postSSCAndHSCMarksCards(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>SSC And HSC MarksCards</strong></CLabel>
+                        <CBadge color="info">Required both documents</CBadge>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findSSCAndHSCMarksCards !== undefined ?
+                            findSSCAndHSCMarksCards !== undefined && findSSCAndHSCMarksCards && findSSCAndHSCMarksCards.rejected === true && findSSCAndHSCMarksCards && findSSCAndHSCMarksCards.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redSSCAndHSCMarksCards(e)}
+                                                required
+                                                multiple
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={SSCAndHSCMarksCardsLoading}>{SSCAndHSCMarksCardsLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findSSCAndHSCMarksCards && findSSCAndHSCMarksCards.verified && findSSCAndHSCMarksCards && findSSCAndHSCMarksCards.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>MarksCards Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findSSCAndHSCMarksCards.rejected === false && findSSCAndHSCMarksCards.verified === false ?
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="warning">Your SSC And HSC MarksCards Document Approval is Pending</CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="success">Your SSC And HSC MarksCards Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redSSCAndHSCMarksCards(e)}
+                                            required
+                                            multiple
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={SSCAndHSCMarksCardsLoading}>{SSCAndHSCMarksCardsLoading ? "Resizing" : "Submit"}</CButton>
+                                    {findSSCAndHSCMarksCards && findSSCAndHSCMarksCards.verified && findSSCAndHSCMarksCards && findSSCAndHSCMarksCards.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>Caste Certificate Rejected</CBadge> : null}
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postSportsRelatedDocs(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>SPORTS RELATED DOCUMENTS</strong></CLabel>
+                        <CBadge color="info">Ignore if there aren't any</CBadge>
+                    </CCol>
+                    {
+                        docStatus && docStatus !== null && findSportsRelatedDocs !== undefined ?
+                            findSportsRelatedDocs !== undefined && findSportsRelatedDocs && findSportsRelatedDocs.rejected === true && findSportsRelatedDocs && findSportsRelatedDocs.verified === true ?
+                                <>
+                                    <CCol xs="12" md="6">
+                                        <div className="file">
+                                            <CInputFile
+                                                type="file"
+                                                accept="image/png, image/jpeg, image/jpg"
+                                                onChange={(e) => redSportsRelatedDocs(e)}
+                                                multiple
+                                                required
+                                            />
+                                        </div>
+                                    </CCol>
+                                    <CCol xs="12" md="3">
+                                        <CButton color="primary" type="submit" disabled={sportsRelatedDocsLoading}>{sportsRelatedDocsLoading ? "Resizing" : "Submit"}</CButton>
+                                        {findSportsRelatedDocs && findSportsRelatedDocs.verified && findSportsRelatedDocs && findSportsRelatedDocs.rejected ? <CBadge color="danger" style={{ marginLeft: '.5rem' }}>Caste Certificate Rejected</CBadge> : null}
+                                    </CCol>
+                                </>
+                                :
+                                findSportsRelatedDocs.rejected === false && findSportsRelatedDocs.verified === false ?
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="warning">Your Adhaar Parents Document Approval is Pending </CBadge>
+                                    </CCol>
+                                    :
+                                    <CCol xs="12" md="3">
+                                        <CBadge color="success">Your Sports Document Has been Approved</CBadge>
+                                    </CCol>
+                            :
+                            <>
+                                <CCol xs="12" md="6">
+                                    <div className="file">
+                                        <CInputFile
+                                            type="file"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onChange={(e) => redSportsRelatedDocs(e)}
+                                            multiple
+                                            required
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol xs="12" md="3">
+                                    <CButton color="primary" type="submit" disabled={sportsRelatedDocsLoading}>{sportsRelatedDocsLoading ? "Resizing" : "Submit"}</CButton>
+                                </CCol>
+                            </>
+                    }
+                </CFormGroup>
+            </CForm>
+            {
+                loading ?
+                    <CProgress value={progress} showPercentage className="mb-3" /> :
+                    <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postFeeReceipt(e)}>
+                        <CFormGroup row>
+                            <CCol xs="12" md="3">
+                                <CLabel><strong>FEE RECEIPT</strong></CLabel>
+                                <CBadge col color="info">Upload Fee Doc whenever you pay the fee</CBadge>
+                            </CCol>
+                            <CCol xs="12" md="6">
+                                <div className="file">
+                                    <CInputFile
+                                        type="file"
+                                        accept="image/png, image/jpeg, image/jpg"
+                                        onChange={(e) => redFeeReceipt(e)}
+                                        required
+                                    />
+                                </div>
+                            </CCol>
+                            <CCol xs="12" md="3">
+                                <CButton color="primary" type="submit" disabled={feeReceiptLoading}>{feeReceiptLoading ? "Resizing" : "Submit"}</CButton>
+                            </CCol>
+                        </CFormGroup>
+                    </CForm>
+            }
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postOtherDocs(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>OTHER DOCUMENTS</strong></CLabel>
+                    </CCol>
+                    {/* <CBadge color="primary">Ignore if there aren't any</CBadge> */}
+                    <CCol xs="12" md="6">
+                        <div className="file">
+                            <CInputFile
+                                type="file"
+                                accept="image/png, image/jpeg, image/jpg"
+                                onChange={(e) => redOtherDocs(e)}
+                                required
+                            />
+                        </div>
+                    </CCol>
+                    <CCol xs="12" md="3">
+                        <CButton color="primary" type="submit" disabled={otherDocsLoading}>{otherDocsLoading ? "Resizing" : "Submit"}</CButton>
+                    </CCol>
+                </CFormGroup>
+            </CForm>
+
+            {/* <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postmulti(e)}>
+                <CBadge>UPLOAD MULTIPLE DOCS</CBadge>
+                <CBadge color="primary">Please select multiple Files at a time</CBadge>
+                <CSelect
+                    custom
+                    name="select"
+                    id="select"
+                    value={multiDocType}
+                    onChange={(e) => {
+                        setMultiDocType(e.target.value)
+                        console.log(e.target.value)
+                    }}
+                >
+                    <option value="AdhaarOfParents">Adhaar Of Parents</option>
+                    <option value="SSCAndHSCMarksCards">SSC And HSC MarksCards (Both required at a same time)</option>
+                    <option value="FeeReceipt">Fee Receipts</option>
+                    <option value="OthersDocs">Other Documents</option>
+                    <option value="SportsRelatedDocs">Sports Related Documents</option>
+                </CSelect>
+                <CCol xs="12" md="6">
+                    <CInputFile
+                        id="file-input"
+                        name="file-input"
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg"
+                        onChange={(e) => setMultiDoc(e.target.files)}
+                        multiple
+                        required
+                    />
+                </CCol>
+                <CButton color="primary" type="submit">Submit</CButton>
+            </CForm> */}
+
+
+            {/* <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => post(e)}>
+                            <CBadge>UPLOAD SINGLE DOCS</CBadge>
+                            <CSelect
+                                custom
+                                name="select"
+                                id="select"
+                                value={docType}
+                                onChange={(e) => {
+                                  setDocType(e.target.value)
+                                  console.log(e.target.value)
+                                }}
+                            >
+                                <option value="AdhaarCard">Adhaar Card</option>
+                                <option value="CasteCertificate">Caste Certificate</option>
+                                <option value="BankPassbook">BankPassbook</option>
+                                <option value="IncomeCertificate">IncomeCertificate</option>
+                            </CSelect>
+                            <CCol xs="12" md="6">
+                                <CInputFile
+                                    id="file-input"
+                                    name="file-input"
+                                    type="file"
+                                    accept="image/png, image/jpeg, image/jpg"
+                                    onChange={(e) => setDoc(e.target.files[0])}
+                                    required
+                                />
+                            </CCol>
+                            <CButton color="primary" type="submit">Submit</CButton>
+                        </CForm> 
+            
+                        <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postmulti(e)}>
+                            <CBadge>UPLOAD MULTIPLE DOCS</CBadge>
+                            <CBadge color="primary">Please select multiple Files at a time</CBadge>
+                            <CSelect
+                                custom
+                                name="select"
+                                id="select"
+                                value={multiDocType}
+                                onChange={(e) => {
+                                  setMultiDocType(e.target.value)
+                                  console.log(e.target.value)
+                                }}
+                            >
+                                <option value="AdhaarOfParents">Adhaar Of Parents</option>
+                                <option value="SSCAndHSCMarksCards">SSC And HSC MarksCards (Both required at a same time)</option>
+                                <option value="FeeReceipt">Fee Receipts</option>
+                                <option value="OthersDocs">Other Documents</option>
+                                <option value="SportsRelatedDocs">Sports Related Documents</option>
+                            </CSelect>
+                            <CCol xs="12" md="6">
+                                <CInputFile
+                                    id="file-input"
+                                    name="file-input"
+                                    type="file"
+                                    accept="image/png, image/jpeg, image/jpg"
+                                    onChange={(e) => setMultiDoc(e.target.files)}
+                                    multiple
+                                    required
+                                />
+                            </CCol>
+                            <CButton color="primary" type="submit">Submit</CButton>
+                        </CForm>   */}
+        </>
+    )
+}
+
+export default DocumentSubmission
