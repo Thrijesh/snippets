@@ -1,0 +1,433 @@
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+    getAllDocs,
+    getDocumentById,
+    verifyAndRejectSingleDoc,
+    verifyAndRejectMultipleDoc,
+    verifyAndRejectFeeDocs,
+    verifyAndRejectOtherDocs,
+
+} from '../../reduxStore/actions/approveDocument.action'
+import {
+    CButton,
+} from "@coreui/react";
+import SliderImage from 'react-zoom-slider';
+
+import './ApproveStudent.scss'
+
+function ApproveStudentDocs() {
+
+    const [showModal, setShowModal] = useState(false)
+    const [studentId, setStudentId] = useState(null)
+    const [query, setQuery] = useState('')
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [image, setImage] = useState()
+    const [ID, setID] = useState()
+    const [showMultiImageModal, setShowMultiImageModal] = useState(false)
+    const [multipleImage, setMultipleImage] = useState([])
+    const [multipleImageID, setMultipleImageID] = useState()
+    const [showFeeImageModal, setShowFeeImageModal] = useState(false)
+    const [showOtherImageModal, setShowOtherImageModal] = useState(false)
+    const [feeImage, setFeeImage] = useState()
+    const [feeID, setFeeID] = useState()
+    const [otherImage, setOtherImage] = useState()
+    const [otherID, setOtherID] = useState()
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(getAllDocs())
+    }, [])
+
+    const getDocsPhoto = (id, _id) => {
+        dispatch(getDocumentById(id))
+        setStudentId(_id)
+        setShowModal(!showModal)
+    }
+
+    const verifyHandler = (id) => {
+        let verify = true
+        let reject = false
+        dispatch(verifyAndRejectSingleDoc(id, studentId, verify, reject))
+    }
+
+    const rejectHandler = (id) => {
+        let verify = false
+        let reject = true
+        dispatch(verifyAndRejectSingleDoc(id, studentId, verify, reject))
+    }
+
+    const multiDocVerifyHandler = (id) => {
+        let verify = true
+        let reject = false
+        dispatch(verifyAndRejectMultipleDoc(id, studentId, verify, reject))
+    }
+
+    const multiDocRejectHandler = (id) => {
+        let reject = true
+        let verify = false
+        dispatch(verifyAndRejectMultipleDoc(id, studentId, verify, reject))
+    }
+
+    const feeDocVerifyHandler = (id) => {
+        let reject = false
+        let verify = true
+        dispatch(verifyAndRejectFeeDocs(id, studentId, verify, reject))
+    }
+
+    const feeDocRejectHandler = (id) => {
+        let reject = true
+        let verify = false
+        dispatch(verifyAndRejectFeeDocs(id, studentId, verify, reject))
+    }
+
+    const otherDocVerifyHandler = (id) => {
+        let reject = false
+        let verify = true
+        dispatch(verifyAndRejectOtherDocs(id, studentId, verify, reject))
+    }
+
+    const otherDocRejectHandler = (id) => {
+        let reject = true
+        let verify = false
+        dispatch(verifyAndRejectOtherDocs(id, studentId, verify, reject))
+    }
+
+    const modal = {
+        position: 'fixed',
+        top: "50%",
+        left: "50%",
+        transform: "translate(-38%, -50%)",
+        background: 'dodgerblue',
+        overflow: 'scroll',
+        height: '70vh',
+        width: '80%'
+    }
+
+    const imageModal = {
+        position: 'absolute',
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        background: 'red',
+        height: '100%',
+        width: '60%'
+    }
+
+    const passImage = (image, id) => {
+        setImage(image)
+        setID(id)
+        setShowImageModal(true)
+    }
+
+    const passFeeImage = (image, id) => {
+        setFeeImage(image)
+        setFeeID(id)
+        setShowFeeImageModal(true)
+    }
+
+    const passOtherImage = (image, id) => {
+        setOtherImage(image)
+        setOtherID(id)
+        setShowOtherImageModal(true)
+    }
+
+    const passMultipleImageArr = (imageArr, id) => {
+        let newData = imageArr.map(el => {
+            return {
+                image: `data:${el.contentType};base64,${el.image}`,
+                title: el.name
+            }
+        })
+        setMultipleImage(newData)
+        setMultipleImageID(id)
+        setShowMultiImageModal(true)
+    }
+
+    const state = useSelector(state => state.document)
+
+    console.log(state)
+    const loading = <section style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%", height: "100vh",
+        background: "rgba(0, 0, 0, .5)",
+        display: "flex",
+        justifyContent: 'center',
+        alignItems: "center"
+    }}>
+        <h1>LOADING...</h1>
+    </section>
+
+    const filterStudents = state.documents && state.documents.filter(el => {
+        if (query.length != 0 && typeof (query) === "string") {
+            return el.student.stud_fname.toLowerCase().includes(query.toLowerCase()) ||
+                el.student.stud_lname.toLowerCase().includes(query.toLowerCase()) ||
+                el.student.stud_reg_num.toString().includes(query)
+        }
+        return state.documents
+    })
+
+    console.log(filterStudents)
+
+    return (
+        <section>
+            {
+                state.loading ? loading :
+                    <section className="approve_stud_docs">
+                        <header className="header">Approve Documents</header>
+                        <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+                            <thead className="thead-light">
+                                <tr>
+                                    <th>FILTER</th>
+                                    <input className="filter_input" type="text" placeholder="ENTER A NAME OR REG.NO" onChange={(event) => setQuery(event.target.value)} />
+                                </tr>
+                            </thead>
+                            <thead className="thead-light">
+                                <tr>
+                                    {/* <th className="text-center"><CIcon name="cil-people" /></th> */}
+                                    <th>SL.NO</th>
+                                    <th className="text-center">REG.NO</th>
+                                    <th>STUDENT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    filterStudents && filterStudents.length === 0 ?
+                                        <p style={{ color: 'red' }}>No Results Found</p> :
+                                        filterStudents && filterStudents.map((el, i) => {
+                                            return (
+                                                <tr className="table_column" onClick={() => getDocsPhoto(el._id, el.stud_regNo)}>
+                                                    <td>{i + 1}</td>
+                                                    <td className="text-center">{el.student.stud_reg_num}</td>
+                                                    <td>{`${el.student.stud_fname} ${el.student.stud_lname}`}</td>
+                                                </tr>
+                                            )
+                                        }) 
+                                }
+                            </tbody>
+                        </table>
+                        {showModal &&
+                            <div className="document_modal">
+                                {
+                                    showImageModal &&
+                                    <div className="image_modal">
+                                        <CButton color="danger" className="image_modal_close_button" onClick={() => setShowImageModal(false)}>Close</CButton>
+                                        <img className="image" src={image} alt="image"/>
+                                        <CButton type="submit" color="success" style={{textTransform: 'uppercase'}} onClick={() => verifyHandler(ID)}>ACCEPT</CButton>
+                                        <CButton type="submit" color="danger" style={{textTransform: 'uppercase'}} onClick={() => rejectHandler(ID)}>REJECT</CButton>
+                                    </div>
+                                }
+                                {
+                                    showMultiImageModal &&
+                                    <div className="image_modal">
+                                        <CButton color="danger" className="image_modal_close_button" onClick={() => setShowMultiImageModal(false)}>Close</CButton>
+                                        <SliderImage 
+                                            data={multipleImage} 
+                                            width="450px" 
+                                            showDescription={true} 
+                                            direction="right" 
+                                        />
+                                        <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => multiDocVerifyHandler(multipleImageID)}>Accept</CButton>
+                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => multiDocRejectHandler(multipleImageID)}>Reject</CButton>
+                                    </div>
+                                }
+                                {
+                                    showFeeImageModal &&
+                                    <div className="image_modal">
+                                        <CButton color="danger" className="image_modal_close_button" onClick={() => setShowFeeImageModal(false)}>Close</CButton>
+                                        <img className="image" src={feeImage} alt="image"/>
+                                        <CButton type="submit" color="success" style={{textTransform: 'uppercase'}} onClick={() => feeDocVerifyHandler(feeID)}>ACCEPT</CButton>
+                                        <CButton type="submit" color="danger" style={{textTransform: 'uppercase'}} onClick={() => feeDocRejectHandler(feeID)}>REJECT</CButton>
+                                    </div>
+                                }
+                                {
+                                    showOtherImageModal &&
+                                    <div className="image_modal">
+                                        <CButton color="danger" className="image_modal_close_button" onClick={() => setShowOtherImageModal(false)}>Close</CButton>
+                                        <img className="image" src={otherImage} alt="image"/>
+                                        <CButton type="submit" color="success" style={{textTransform: 'uppercase'}} onClick={() => otherDocVerifyHandler(otherID)}>ACCEPT</CButton>
+                                        <CButton type="submit" color="danger" style={{textTransform: 'uppercase'}} onClick={() => otherDocRejectHandler(otherID)}>REJECT</CButton>
+                                    </div>
+                                }
+                                <nav className="modal_nav">
+                                    <div className="modal_student_details">
+                                        <div>
+                                            <header>REG.NO:{" "}
+                                                <strong>
+                                                    {state.documents && state.documents[0].student.stud_reg_num}
+                                                </strong>
+                                            </header>
+                                        </div>
+                                        <div>
+                                            <header>STUDENT NAME: {' '}
+                                                <strong>
+                                                    {state.documents && state.documents[0].student.stud_fname} {state.documents && state.documents[0].student.stud_lname}
+                                                </strong>
+                                            </header>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <CButton className="modal_close_button" onClick={() => setShowModal(!showModal)} color='danger'>Close</CButton>
+                                    </div>
+                                </nav>
+                                <table className="table table-hover table-outline mb-0 d-none d-sm-table">
+                                    <thead className="thead-light">
+                                        <tr>
+                                            <th>DOCUMENT TYPE</th>
+                                            <th>IMAGE</th>
+                                            <th>STATUS</th>
+                                            <th>DOCUMENT STATUS</th>
+                                            {/* <th className="text-center">VERIFY</th> */}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {state.studentDoc && state.studentDoc.singleDocs.map((el, key) => {
+                                            return  <tr key={el._id} onClick={() => passImage(`data:${el.contentType};base64,${el.image}`, el._id)}>
+                                                        <td><strong style={{ textTransform: 'uppercase', fontSize: '.9rem' }}>{el.name}</strong></td>
+                                                        <td>
+                                                            <img key={key} src={`data:${el.contentType};base64,${el.image}`} width="40" alt={'hgj'} />
+                                                        </td>
+                                                        <td>
+                                                            {el.verified ? <strong style={{ color: "#26994D" }}>SEEN</strong> : <strong style={{ color: "#E55353" }}>NOT SEEN</strong>}
+                                                        </td>
+                                                        <td>
+                                                            {el.rejected ? <strong style={{ color: "#E55353" }}>REJECTED</strong> : el.verified === false ? 
+                                                                    <strong style={{ color: "#222222" }}>NOT VERIFIED</strong> :
+                                                                    <strong style={{ color: "#26994D" }}>ACCEPTED</strong> 
+                                                            }
+                                                        </td>
+                                                        {/* <td className="text-center">
+                                                            <CButton type="submit" color="success" style={{ textTransform: 'uppercase', textAlign: "center" }} onClick={() => verifyHandler(el._id)}> */}
+                                                                {/* <img src={right} width="20" alt="right"/> */}
+                                                                {/* ACCEPT */}
+                                                            {/* </CButton>
+                                                            <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => rejectHandler(el._id)}>REJECT</CButton>
+                                                        </td> */}
+                                                    </tr>
+                                        })}
+                                        {state.studentDoc && state.studentDoc.multipleDocs.map((el, key) => {
+                                            return  <tr key={el._id} onClick={() => passMultipleImageArr(el.Document, el._id)}>
+                                                        <td><strong style={{ textTransform: 'uppercase', fontSize: '.9rem' }}>{el.Document_type}</strong></td>
+                                                        <td>
+                                                            <img key={key} src={`data:${el.Document[0].contentType};base64,${el.Document[0].image}`} width="40" alt={'hgj'} />
+                                                        </td>
+                                                        <td>
+                                                            {el.verified ? <strong style={{ color: "#26994D" }}>SEEN</strong> : <strong style={{ color: "#E55353" }}>NOT SEEN</strong>}
+                                                        </td>
+                                                        <td>
+                                                            {el.rejected ? <strong style={{ color: "#E55353" }}>REJECTED</strong> : el.verified === false ? 
+                                                                    <strong style={{ color: "#222222" }}>NOT VERIFIED</strong> :
+                                                                    <strong style={{ color: "#26994D" }}>ACCEPTED</strong>}
+                                                        </td>
+                                                        {/* <td className="text-center">
+                                                            <CButton type="submit" color="success" style={{ textTransform: 'uppercase', textAlign: "center" }} onClick={() => verifyHandler(el._id)}> */}
+                                                                {/* <img src={right} width="20" alt="right"/> */}
+                                                                {/* ACCEPT */}
+                                                            {/* </CButton>
+                                                            <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => rejectHandler(el._id)}>REJECT</CButton>
+                                                        </td> */}
+                                                    </tr>
+                                        })}
+                                        {state.studentDoc && state.studentDoc.feeReceipt.map((el) => {
+                                            return  <tr key={el._id} onClick={() => passFeeImage(`data:${el.contentType};base64,${el.image}`, el._id)}>
+                                                        <td><strong style={{ textTransform: 'uppercase', fontSize: '.9rem' }}>{el.name}</strong></td>
+                                                        <td>
+                                                            <img key={el.name} src={`data:${el.contentType};base64,${el.image}`} width="40" alt={'hgj'} />
+                                                        </td>
+                                                        <td>
+                                                            {el.verified ? <strong style={{ color: "#26994D" }}>SEEN</strong> : <strong style={{ color: "#E55353" }}>NOT SEEN</strong>}
+                                                        </td>
+                                                        <td>
+                                                            {el.rejected ? <strong style={{ color: "#E55353" }}>REJECTED</strong> : el.verified === false ? 
+                                                                    <strong style={{ color: "#222222" }}>NOT VERIFIED</strong> :
+                                                                    <strong style={{ color: "#26994D" }}>ACCEPTED</strong> }
+                                                        </td>
+                                                        {/* <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => feeDocVerifyHandler(el._id)}>Accept</CButton>
+                                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => feeDocRejectHandler(el._id)}>Reject</CButton> */}
+                                                    </tr>
+                                        })}
+                                        {state.studentDoc && state.studentDoc.othersDocs.map((el) => {
+                                            return  <tr key={el._id} onClick={() => passOtherImage(`data:${el.contentType};base64,${el.image}`, el._id)}>
+                                                        <td><strong style={{ textTransform: 'uppercase', fontSize: '.9rem' }}>{el.name}</strong></td>
+                                                        <td>
+                                                            <img key={el.name} src={`data:${el.contentType};base64,${el.image}`} width="40" alt={'hgj'} />
+                                                        </td>
+                                                        <td>
+                                                            {el.verified ? <strong style={{ color: "#26994D" }}>SEEN</strong> : <strong style={{ color: "#E55353" }}>NOT SEEN</strong>}
+                                                        </td>
+                                                        <td>
+                                                            {el.rejected ? <strong style={{ color: "#E55353" }}>REJECTED</strong> : el.verified === false ? 
+                                                                    <strong style={{ color: "#222222" }}>NOT VERIFIED</strong> :
+                                                                    <strong style={{ color: "#26994D" }}>ACCEPTED</strong> }
+                                                        </td>
+                                                        {/* <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => feeDocVerifyHandler(el._id)}>Accept</CButton>
+                                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => feeDocRejectHandler(el._id)}>Reject</CButton> */}
+                                                    </tr>
+                                        })}
+                                    </tbody>
+                                </table>
+                                {/* {state.studentDoc && state.studentDoc.singleDocs.map((el, key) => {
+                                    return  <div className="modal_document" key={el._id}>
+                                                <div className="document_image">
+                                                    <div>
+                                                        <img onClick={() => passImage(`data:${el.contentType};base64,${el.image}`)} key={key} src={`data:${el.contentType};base64,${el.image}`} width="200" alt={'hgj'} />
+                                                    </div>
+                                                    <div>
+                                                        <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => verifyHandler(el._id)}>Accept</CButton>
+                                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => rejectHandler(el._id)}>Reject</CButton>
+                                                    </div>
+                                                </div>
+                                                <div className="modal_document_details">
+                                                    <p>Document Type: {el.name}</p>
+                                                    <p>Viewed: <strong style={{ color: el.verified ? '#7CFC00' : 'red' }}>{el.verified ? 'SEEN' : "NOT SEEN"}</strong></p>
+                                                    {el.verified ? <p>Document Status: <strong style={{ color: el.rejected ? 'red' : '#7CFC00' }}>{el.rejected ? 'Rejected' : "Accepted"}</strong></p> : null}
+                                                </div>
+                                            </div>
+                                })} */}
+{/*                                 
+                                {state.studentDoc && state.studentDoc.multipleDocs.map((eachDoc) => {
+                                    return <div key={eachDoc._id} style={{ border: "1px solid", margin: "1rem" }}>
+                                        <p>Document Type: {eachDoc.Document_type}</p>
+                                        <p>Verified Status: <strong style={{ color: eachDoc.verified ? '#7CFC00' : 'red' }}>{eachDoc.verified ? 'Verified' : "Not Verified"}</strong></p>
+                                        {eachDoc.verified ? <p>Document Status: <strong style={{ color: eachDoc.rejected ? 'red' : '#7CFC00' }}>{eachDoc.rejected ? 'Rejected' : "Accepted"}</strong></p> : null}
+                                        <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => multiDocVerifyHandler(eachDoc._id)}>Accept</CButton>
+                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => multiDocRejectHandler(eachDoc._id)}>Reject</CButton>
+                                        {
+                                            eachDoc.Document.map((el, i) => {
+                                                return <img key={i} src={`data:${el.contentType};base64,${el.image}`} width="200" alt={'hgj'} />
+                                            })
+                                        }
+                                    </div>
+                                })} */}
+                                {/* {state.studentDoc && state.studentDoc.feeReceipt.map((eachDoc) => {
+                                    return <div key={eachDoc._id} style={{ border: "1px solid", margin: "1rem" }}>
+                                        <p>Document Type: {eachDoc.name}</p>
+                                        <p>Verified Status: <strong style={{ color: eachDoc.verified ? '#7CFC00' : 'red' }}>{eachDoc.verified ? 'Verified' : "Not Verified"}</strong></p>
+                                        {eachDoc.verified ? <p>Document Status: <strong style={{ color: eachDoc.rejected ? 'red' : '#7CFC00' }}>{eachDoc.rejected ? 'Rejected' : "Accepted"}</strong></p> : null}
+                                        <img src={`data:${eachDoc.contentType};base64,${eachDoc.image}`} width="200" alt={'hgj'} />
+                                        <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => feeDocVerifyHandler(eachDoc._id)}>Accept</CButton>
+                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => feeDocRejectHandler(eachDoc._id)}>Reject</CButton>
+                                    </div>
+                                })} */}
+                                {/* {state.studentDoc && state.studentDoc.othersDocs.map((eachDoc) => {
+                                    return <div key={eachDoc._id} style={{ border: "1px solid", margin: "1rem" }}>
+                                        <p>Document Type: {eachDoc.name}</p>
+                                        <p>Verified Status: <strong style={{ color: eachDoc.verified ? '#7CFC00' : 'red' }}>{eachDoc.verified ? 'Verified' : "Not Verified"}</strong></p>
+                                        {eachDoc.verified ? <p>Document Status: <strong style={{ color: eachDoc.rejected ? 'red' : '#7CFC00' }}>{eachDoc.rejected ? 'Rejected' : "Accepted"}</strong></p> : null}
+                                        <img src={`data:${eachDoc.contentType};base64,${eachDoc.image}`} width="200" alt={'hgj'} />
+                                        <CButton type="submit" color="success" style={{ textTransform: 'uppercase' }} onClick={() => otherDocVerifyHandler(eachDoc._id)}>Accept</CButton>
+                                        <CButton type="submit" color="danger" style={{ textTransform: 'uppercase' }} onClick={() => otherDocRejectHandler(eachDoc._id)}>Reject</CButton>
+                                    </div>
+                                })} */}
+                            </div>
+                        }
+                    </section>
+            }
+        </section>
+    )
+}
+
+export default ApproveStudentDocs
