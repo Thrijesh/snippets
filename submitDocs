@@ -9,7 +9,9 @@ import {
     CLabel,
     CFormGroup,
     CInputFile,
-    CProgress
+    CProgress,
+    CSelect,
+    CRow
 } from "@coreui/react";
 import Compress from "react-image-file-resizer";
 
@@ -48,13 +50,13 @@ function DocumentSubmission() {
     const [sportsDocPhotoOne, setSportsDocPhotoOne] = useState()
     const [sportsDocPhotoTwo, setSportsDocPhotoTwo] = useState()
     const [sportsDocPhotoThree, setSportsDocPhotoThree] = useState()
+    const [feeName, setFeesName] = useState()
+    const [otherDocName, setOtherDocName] = useState()
+    
     // const [newDoc, setNewDoc] = useState()
     // const [newMulDoc, setNewMulDoc] = useState([])
     const ref = useRef();
 
-    console.log(adhaarOfParents)
-    console.log(SSCAndHSCMarksCards)
-    console.log(sportsRelatedDocs)
     // const data = new FormData()
 
     // data.append('Document_type', docType)
@@ -102,38 +104,50 @@ function DocumentSubmission() {
             const fileOne = e.target.files[0]
             const fileTwo = e.target.files[1]
             if (fileOne !== undefined) {
-                Compress.imageFileResizer(
-                    fileOne,
-                    660,
-                    780,
-                    "WEBP",
-                    90,
-                    0,
-                    (uri) => {
-                        console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
-                        setAdhaarOfParentsPhotoOne(uri)
-                        setAdhaarOfParentsLoading(false)
-                    },
-                    "blob"
-                );
+                if (fileOne.size > 4000000) {
+                    setAdhaarOfParentsLoading(false)
+                    alert("File Size is too large. Maximum size is 4mb")
+                    return e.target.value = null
+                } else {
+                    Compress.imageFileResizer(
+                        fileOne,
+                        1024,
+                        768,
+                        "WEBP",
+                        96,
+                        0,
+                        (uri) => {
+                            console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
+                            setAdhaarOfParentsPhotoOne(uri)
+                            setAdhaarOfParentsLoading(false)
+                        },
+                        "blob"
+                    );
+                }
             }
 
             if (fileTwo !== undefined) {
-                setAdhaarOfParentsLoading(true)
-                Compress.imageFileResizer(
-                    fileTwo,
-                    660,
-                    780,
-                    "WEBP",
-                    90,
-                    0,
-                    (uri) => {
-                        console.log(uri, '22222222222222222222222222222222222222222222222222')
-                        setAdhaarOfParentsPhotoTwo(uri)
-                        setAdhaarOfParentsLoading(false)
-                    },
-                    "blob"
-                );
+                if (fileTwo.size > 4000000) {
+                    setAdhaarOfParentsLoading(false)
+                    alert("File Size is too large. Maximum size is 4mb")
+                    return e.target.value = null
+                } else {
+                    setAdhaarOfParentsLoading(true)
+                    Compress.imageFileResizer(
+                        fileTwo,
+                        1024,
+                        768,
+                        "WEBP",
+                        96,
+                        0,
+                        (uri) => {
+                            console.log(uri, '22222222222222222222222222222222222222222222222222')
+                            setAdhaarOfParentsPhotoTwo(uri)
+                            setAdhaarOfParentsLoading(false)
+                        },
+                        "blob"
+                    );
+                }
             }
         }
         if (!e.target.files.length) {
@@ -156,10 +170,10 @@ function DocumentSubmission() {
             if (fileOne !== undefined) {
                 Compress.imageFileResizer(
                     fileOne,
-                    660,
-                    780,
+                    1024,
+                    768,
                     "WEBP",
-                    90,
+                    96,
                     0,
                     (uri) => {
                         console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
@@ -174,10 +188,10 @@ function DocumentSubmission() {
                 setSSCAndHSCMarksCardsLoading(true)
                 Compress.imageFileResizer(
                     fileTwo,
-                    660,
-                    780,
+                    1024,
+                    768,
                     "WEBP",
-                    90,
+                    96,
                     0,
                     (uri) => {
                         console.log(uri, '22222222222222222222222222222222222222222222222222')
@@ -208,10 +222,10 @@ function DocumentSubmission() {
             if (fileOne !== undefined) {
                 Compress.imageFileResizer(
                     fileOne,
-                    660,
-                    780,
+                    1024,
+                    768,
                     "WEBP",
-                    90,
+                    96,
                     0,
                     (uri) => {
                         console.log(uri, "11111111111111111111111111111111111111111111111111111111111")
@@ -226,10 +240,10 @@ function DocumentSubmission() {
                 setSportsRelatedDocsLoading(true)
                 Compress.imageFileResizer(
                     fileTwo,
-                    660,
-                    780,
+                    1024,
+                    768,
                     "WEBP",
-                    90,
+                    96,
                     0,
                     (uri) => {
                         console.log(uri, '22222222222222222222222222222222222222222222222222')
@@ -244,10 +258,10 @@ function DocumentSubmission() {
                 setSportsRelatedDocsLoading(true)
                 Compress.imageFileResizer(
                     fileThree,
-                    660,
-                    780,
+                    1024,
+                    768,
                     "WEBP",
-                    90,
+                    96,
                     0,
                     (uri) => {
                         console.log(uri, '33333333333333333333333333333333333')
@@ -324,6 +338,13 @@ function DocumentSubmission() {
             data.append('multipleDocs', adhaarOfParentsphotoTwo)
         }
         await axios.post(`http://localhost:5000/api/add-docs/multi-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
         console.log(adhaarOfParentsPhotoOne)
         console.log(adhaarOfParentsphotoTwo)
     }
@@ -341,6 +362,13 @@ function DocumentSubmission() {
             data.append('multipleDocs', SSCAndHSCMarksCardsphotoTwo)
         }
         await axios.post(`http://localhost:5000/api/add-docs/multi-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
         console.log(SSCAndHSCMarksCardsPhotoOne)
         console.log(SSCAndHSCMarksCardsphotoTwo)
     }
@@ -362,6 +390,13 @@ function DocumentSubmission() {
             data.append('multipleDocs', sportsDocPhotoThree)
         }
         await axios.post(`http://localhost:5000/api/add-docs/multi-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
         console.log(sportsDocPhotoOne)
         console.log(sportsDocPhotoTwo)
         console.log(sportsDocPhotoThree)
@@ -373,20 +408,26 @@ function DocumentSubmission() {
 
         const file = e.target.files[0]
         if (file) {
-            Compress.imageFileResizer(
-                file,
-                660,
-                780,
-                "WEBP",
-                90,
-                0,
-                (uri) => {
-                    console.log(uri)
-                    setAdhaar(uri)
-                    setAdhaarLoading(false)
-                },
-                "blob"
-            );
+            if (file.size <= 4000000) {
+                Compress.imageFileResizer(
+                    file,
+                    1024,
+                    768,
+                    "WEBP",
+                    96,
+                    0,
+                    (uri) => {
+                        console.log(uri)
+                        setAdhaar(uri)
+                        setAdhaarLoading(false)
+                    },
+                    "blob"
+                );
+            } else {
+                alert("File is too Large to Upload. Maximum size is 4mb")
+                setAdhaarLoading(false)
+                return e.target.value = null
+            }
         } else {
             setAdhaarLoading(false)
         }
@@ -398,20 +439,26 @@ function DocumentSubmission() {
 
         const file = e.target.files[0]
         if (file) {
-            Compress.imageFileResizer(
-                file,
-                660,
-                780,
-                "WEBP",
-                90,
-                0,
-                (uri) => {
-                    console.log(uri)
-                    setCasteCertificate(uri)
-                    setCasteCertificateLoading(false)
-                },
-                "blob"
-            );
+            if (file.size <= 4000000) {
+                Compress.imageFileResizer(
+                    file,
+                    1024,
+                    768,
+                    "WEBP",
+                    96,
+                    0,
+                    (uri) => {
+                        console.log(uri)
+                        setCasteCertificate(uri)
+                        setCasteCertificateLoading(false)
+                    },
+                    "blob"
+                );
+            } else {
+                alert("File is too Large to Upload. Maximum size is 4mb")
+                setCasteCertificateLoading(false)
+                return e.target.value = null
+            }
         } else {
             setCasteCertificateLoading(false)
         }
@@ -421,20 +468,26 @@ function DocumentSubmission() {
         setBankPassbookLoading(true)
         const file = e.target.files[0]
         if (file) {
-            Compress.imageFileResizer(
-                file,
-                660,
-                780,
-                "WEBP",
-                90,
-                0,
-                (uri) => {
-                    console.log(uri)
-                    setBankPassbook(uri)
-                    setBankPassbookLoading(false)
-                },
-                "blob"
-            );
+            if (file.size <= 4000000) {
+                Compress.imageFileResizer(
+                    file,
+                    1024,
+                    768,
+                    "WEBP",
+                    96,
+                    0,
+                    (uri) => {
+                        console.log(uri)
+                        setBankPassbook(uri)
+                        setBankPassbookLoading(false)
+                    },
+                    "blob"
+                );
+            } else {
+                alert("File is too Large to Upload. Maximum size is 4mb")
+                setBankPassbookLoading(false)
+                return e.target.value = null
+            }
         } else {
             setBankPassbookLoading(false)
         }
@@ -445,19 +498,26 @@ function DocumentSubmission() {
 
         const file = e.target.files[0]
         if (file) {
-            Compress.imageFileResizer(
-                file,
-                660,
-                780,
-                "WEBP",
-                90,
-                0,
-                (uri) => {
-                    setIncomeCertificate(uri)
-                    setIncomeCertificateLoading(false)
-                },
-                "blob"
-            );
+            if (file.size <= 4000000) {
+                Compress.imageFileResizer(
+                    file,
+                    1024,
+                    768,
+                    "WEBP",
+                    96,
+                    0,
+                    (uri) => {
+                        console.log(uri)
+                        setIncomeCertificate(uri)
+                        setIncomeCertificateLoading(false)
+                    },
+                    "blob"
+                );
+            } else {
+                alert("File is too Large to Upload. Maximum size is 4mb")
+                setIncomeCertificateLoading(false)
+                return e.target.value = null
+            }
         } else {
             setIncomeCertificateLoading(false)
         }
@@ -491,42 +551,56 @@ function DocumentSubmission() {
 
         const file = e.target.files[0]
         if (file) {
-            Compress.imageFileResizer(
-                file,
-                660,
-                780,
-                "WEBP",
-                90,
-                0,
-                (uri) => {
-                    setFeeReceipt(uri)
-                    setFeeReceiptLoading(false)
-                },
-                "blob"
-            )
+            if (file.size <= 4000000) {
+                Compress.imageFileResizer(
+                    file,
+                    1024,
+                    768,
+                    "WEBP",
+                    96,
+                    0,
+                    (uri) => {
+                        console.log(uri)
+                        setFeeReceipt(uri)
+                        setFeeReceiptLoading(false)
+                    },
+                    "blob"
+                );
+            } else {
+                alert("File is too Large to Upload. Maximum size is 4mb")
+                setFeeReceiptLoading(false)
+                return e.target.value = null
+            }
         } else {
             setFeeReceiptLoading(false)
         }
     }
+
     const redOtherDocs = (e) => {
         e.preventDefault()
         setOtherDocsLoading(true)
 
         const file = e.target.files[0]
         if (file) {
-            Compress.imageFileResizer(
-                file,
-                660,
-                780,
-                "WEBP",
-                90,
-                0,
-                (uri) => {
-                    setOtherDocs(uri)
-                    setOtherDocsLoading(false)
-                },
-                "blob"
-            )
+            if (file.size <= 4000000) {
+                Compress.imageFileResizer(
+                    file,
+                    1024,
+                    768,
+                    "WEBP",
+                    96,
+                    0,
+                    (uri) => {
+                        setOtherDocs(uri)
+                        setOtherDocsLoading(false)
+                    },
+                    "blob"
+                )
+            } else {
+                alert("File is too Large to Upload. Maximum size is 4mb")
+                setOtherDocsLoading(false)
+                return e.target.value = null
+            }
         } else {
             setOtherDocsLoading(false)
         }
@@ -573,6 +647,13 @@ function DocumentSubmission() {
         data.append('student', student)
         data.append('stud_regNo', "66")
         await axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
     const postIncomeCertificate = async (e) => {
         e.preventDefault()
@@ -582,6 +663,13 @@ function DocumentSubmission() {
         data.append('student', student)
         data.append('stud_regNo', "66")
         await axios.post(`http://localhost:5000/api/add-docs/single-doc`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
     // const postAdhaarOfParents = async (e) => {
     //     e.preventDefault()
@@ -616,44 +704,52 @@ function DocumentSubmission() {
     //     data.append('multipleDocs', sportsRelatedDocs)
     //     await axios.post(`http://localhost:5000/api/add-docs/multi-docs`, data)
     // }
-    const postFeeReceipt = (e) => {
-        e.preventDefault()
-        const data = new FormData()
-        data.append('Document_type', "FeeReceipt")
-        data.append('student', student)
-        data.append('fee', feeReceipt)
-        data.append('stud_regNo', "66")
+    // const postFeeReceipt(old) = (e) => {
+    //     e.preventDefault()
+    //     const data = new FormData()
+    //     data.append('Document_type', "FeeReceipt")
+    //     data.append('student', student)
+    //     data.append('fee', feeReceipt)
+    //     data.append('stud_regNo', "66")
 
-        const options = {
-            onUploadProgress: (progressEvent) => {
-                const { loaded, total } = progressEvent
-                let percent = Math.floor((loaded * 100) / total)
-                console.log(`${loaded}kb of ${total}kb | ${percent}%`)
-                setProgress(percent)
-            }
-        }
-        setLoading(true)
-        axios.post(`http://localhost:5000/api/add-docs/fee-recipt`, data, options)
-            .then(res => {
-                console.log(res.data)
-                setLoading(false)
-            })
-            .catch(err => {
-                console.log(err)
-                setLoading(false)
-            })
-        // onUploadProgress(e)
-    }
-    const postOtherDocs = (e) => {
-        e.preventDefault()
-        const data = new FormData()
-        data.append('Document_type', "OtherDocs")
-        data.append('student', student)
-        data.append('otherDocs', otherDocs)
-        data.append('stud_regNo', "66")
+    //     const options = {
+    //         onUploadProgress: (progressEvent) => {
+    //             const { loaded, total } = progressEvent
+    //             let percent = Math.floor((loaded * 100) / total)
+    //             console.log(`${loaded}kb of ${total}kb | ${percent}%`)
+    //             setProgress(percent)
+    //         }
+    //     }
+    //     setLoading(true)
+    //     axios.post(`http://localhost:5000/api/add-docs/fee-recipt`, data, options)
+    //         .then(res => {
+    //             console.log(res.data)
+    //             setLoading(false)
+    //             getDocStatus()
+    //         })
+    //         .catch(err => {
+    //             console.log(err)
+    //             setLoading(false)
+    //         })
+    //     // onUploadProgress(e)
+    // }
+    // const postOtherDocs = (e) => {
+    //     e.preventDefault()
+    //     const data = new FormData()
+    //     data.append('Document_type', "OtherDocs")
+    //     data.append('student', student)
+    //     data.append('otherDocs', otherDocs)
+    //     data.append('stud_regNo', "66")
 
-        axios.post(`http://localhost:5000/api/add-docs/other-docs`, data)
-    }
+    //     axios.post(`http://localhost:5000/api/add-docs/other-docs`, data)
+    //         .then(res => {
+    //             console.log(res.data)
+    //             getDocStatus()
+    //         })
+    //         .catch(err => {
+    //             console.log(err)
+    //         })
+    // }
 
     const getDocStatus = async () => {
         await axios.post(`http://localhost:5000/api/get-status`, { student_regNo: 66 })
@@ -748,23 +844,131 @@ function DocumentSubmission() {
         return el.Document_type === 'SportsRelatedDocs'
     })
 
-    console.log(findAdhaarStatus)
-    console.log(findCasteCertificateStatus)
-    console.log(findBankPassbookStatus)
-    console.log(findIncomeCertificateStatus)
-    console.log(findAdhaarOfParentsStatus)
+    const findFeeReceipt_1 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-1'
+    })
 
+    const findFeeReceipt_2 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-2'
+    })
+
+    const findFeeReceipt_3 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-3'
+    })
+
+    const findFeeReceipt_4 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-4'
+    })
+
+    const findFeeReceipt_5 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-5'
+    })
+
+    const findFeeReceipt_6 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-6'
+    })
+
+    const findFeeReceipt_7 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-7'
+    })
+
+    const findFeeReceipt_8 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-8'
+    })
+
+    const findFeeReceipt_9 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-9'
+    })
+    const findFeeReceipt_10 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-10'
+    })
+    const findFeeReceipt_11 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-11'
+    })
+    const findFeeReceipt_12 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-12'
+    })
+    const findFeeReceipt_13 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-13'
+    })
+    const findFeeReceipt_14 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-14'
+    })
+    const findFeeReceipt_15 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-15'
+    })
+    const findFeeReceipt_16 = docStatus && docStatus.feeReceipt.find(el => {
+        return el.name === 'FeeReceipt-16'
+    })
+
+    const findOtherDocs_1 = docStatus && docStatus.othersDocs.find(el => {
+        return el.name === 'OtherDocs-1'
+    })
+
+    const findOtherDocs_2 = docStatus && docStatus.othersDocs.find(el => {
+        return el.name === 'OtherDocs-2'
+    })
+
+    const findOtherDocs_3 = docStatus && docStatus.othersDocs.find(el => {
+        return el.name === 'OtherDocs-3'
+    })
+
+    const findOtherDocs_4 = docStatus && docStatus.othersDocs.find(el => {
+        return el.name === 'OtherDocs-4'
+    })
+
+    const findOtherDocs_5 = docStatus && docStatus.othersDocs.find(el => {
+        return el.name === 'OtherDocs-5'
+    })
+
+
+    const postFeeReceipt = (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', feeName)
+        data.append('student', student)
+        data.append('fee', feeReceipt)
+        data.append('stud_regNo', "66")
+        if (feeName) {
+            axios.post(`http://localhost:5000/api/add-docs/fee-recipt`, data)
+            .then(res => {
+                console.log(res.data)
+                getDocStatus()
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        } else {
+            alert('Please select the Fee type')
+        }
+    }
+    const postOtherDocs = (e) => {
+        e.preventDefault()
+        const data = new FormData()
+        data.append('Document_type', otherDocName)
+        data.append('student', student)
+        data.append('otherDocs', otherDocs)
+        data.append('stud_regNo', "66")
+
+        if(otherDocName) {
+            axios.post(`http://localhost:5000/api/add-docs/other-docs`, data)
+                .then(res => {
+                    console.log(res.data)
+                    getDocStatus()
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            alert('Please select the Other Doc type')
+        }
+    }
+
+    console.log(feeName)
+    console.log(otherDocName)
+    console.log(otherDocs)
     return (
         <>
-            {/* <input 
-                type="file" 
-                onChange={(e) => addTwoPhoto(e)} 
-                required
-                accept="image/png, image/jpeg, image/jpg"
-                multiple
-                required />
-                <button onClick={(e) => send(e)}>submit</button> */}
-
             <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postAdhaarCard(e)}>
                 <header className="label_header">DOCUMENT SUBMISSION</header>
                 <CFormGroup row>
@@ -1148,7 +1352,260 @@ function DocumentSubmission() {
                     }
                 </CFormGroup>
             </CForm>
-            {
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postFeeReceipt(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>FEE DOCS</strong></CLabel>
+                    </CCol>
+                    <CCol xs="12" md="6">
+                        <CSelect
+                            custom size="md"
+                            value={feeName}
+                            onChange={(e) => setFeesName(e.target.value)}
+                        >
+                            <option value="">Please select one</option>
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_1 !== undefined ?
+                                    findFeeReceipt_1 !== undefined && findFeeReceipt_1.rejected === true && findFeeReceipt_1.verified === true ?
+                                        <option value="FeeReceipt-1" style={{ color: "#FFF", background: "red" }}>Fee One (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_1.rejected === false && findFeeReceipt_1.verified === false ?
+                                            <option value="FeeReceipt-1" style={{ color: "#FFF", background: "orange" }} disabled>Fee One Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-1" style={{ color: "#FFF", background: "green" }} disabled>Fee One Approved</option>
+                                    :
+                                    <option value="FeeReceipt-1">Fee One</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_2 !== undefined ?
+                                    findFeeReceipt_2 !== undefined && findFeeReceipt_2.rejected === true && findFeeReceipt_2.verified === true ?
+                                        <option value="FeeReceipt-2" style={{ color: "#FFF", background: "red" }}>Fee Two (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_2.rejected === false && findFeeReceipt_2.verified === false ?
+                                            <option value="FeeReceipt-2" style={{ color: "#FFF", background: "orange" }} disabled>Fee Two Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-2" style={{ color: "#FFF", background: "green" }} disabled>Fee Two Approved</option>
+                                    :
+                                    <option value="FeeReceipt-2">Fee Two</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_3 !== undefined ?
+                                    findFeeReceipt_3 !== undefined && findFeeReceipt_3.rejected === true && findFeeReceipt_3.verified === true ?
+                                        <option value="FeeReceipt-3" style={{ color: "#FFF", background: "red" }}>Fee Three (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_3.rejected === false && findFeeReceipt_3.verified === false ?
+                                            <option value="FeeReceipt-3" style={{ color: "#FFF", background: "orange" }} disabled>Fee Three Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-3" style={{ color: "#FFF", background: "green" }} disabled>Fee Three Approved</option>
+                                    :
+                                    <option value="FeeReceipt-3">Fee Three</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_4 !== undefined ?
+                                    findFeeReceipt_4 !== undefined && findFeeReceipt_4.rejected === true && findFeeReceipt_4.verified === true ?
+                                        <option value="FeeReceipt-4" style={{ color: "#FFF", background: "red" }}>Fee Four (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_4.rejected === false && findFeeReceipt_4.verified === false ?
+                                            <option value="FeeReceipt-4" style={{ color: "#FFF", background: "orange" }} disabled>Fee Four Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-4" style={{ color: "#FFF", background: "green" }} disabled>Fee Four Approved</option>
+                                    :
+                                    <option value="FeeReceipt-4">Fee Four</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_5 !== undefined ?
+                                    findFeeReceipt_5 !== undefined && findFeeReceipt_5.rejected === true && findFeeReceipt_5.verified === true ?
+                                        <option value="FeeReceipt-5" style={{ color: "#FFF", background: "red" }}>Fee Five (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_5.rejected === false && findFeeReceipt_5.verified === false ?
+                                            <option value="FeeReceipt-5" style={{ color: "#FFF", background: "orange" }} disabled>Fee Five Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-5" style={{ color: "#FFF", background: "green" }} disabled>Fee Five Approved</option>
+                                    :
+                                    <option value="FeeReceipt-5">Fee Five</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_6 !== undefined ?
+                                    findFeeReceipt_6 !== undefined && findFeeReceipt_6.rejected === true && findFeeReceipt_6.verified === true ?
+                                        <option value="FeeReceipt-6" style={{ color: "#FFF", background: "red" }}>Fee Six (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_6.rejected === false && findFeeReceipt_6.verified === false ?
+                                            <option value="FeeReceipt-6" style={{ color: "#FFF", background: "orange" }} disabled>Fee Six Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-6" style={{ color: "#FFF", background: "green" }} disabled>Fee Six Approved</option>
+                                    :
+                                    <option value="FeeReceipt-6">Fee Six</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_7 !== undefined ?
+                                    findFeeReceipt_7 !== undefined && findFeeReceipt_7.rejected === true && findFeeReceipt_7.verified === true ?
+                                        <option value="FeeReceipt-7" style={{ color: "#FFF", background: "red" }}>Fee Seven (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_7.rejected === false && findFeeReceipt_7.verified === false ?
+                                            <option value="FeeReceipt-7" style={{ color: "#FFF", background: "orange" }} disabled>Fee Seven Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-7" style={{ color: "#FFF", background: "green" }} disabled>Fee Seven Approved</option>
+                                    :
+                                    <option value="FeeReceipt-7">Fee Seven</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_8 !== undefined ?
+                                    findFeeReceipt_8 !== undefined && findFeeReceipt_8.rejected === true && findFeeReceipt_8.verified === true ?
+                                        <option value="FeeReceipt-8" style={{ color: "#FFF", background: "red" }}>Fee Eight (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_8.rejected === false && findFeeReceipt_8.verified === false ?
+                                            <option value="FeeReceipt-8" style={{ color: "#FFF", background: "orange" }} disabled>Fee Eight Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-8" style={{ color: "#FFF", background: "green" }} disabled>Fee Eight Approved</option>
+                                    :
+                                    <option value="FeeReceipt-8">Fee Eight</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_9 !== undefined ?
+                                    findFeeReceipt_9 !== undefined && findFeeReceipt_9.rejected === true && findFeeReceipt_9.verified === true ?
+                                        <option value="FeeReceipt-9" style={{ color: "#FFF", background: "red" }}>Fee Nine (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_9.rejected === false && findFeeReceipt_9.verified === false ?
+                                            <option value="FeeReceipt-9" style={{ color: "#FFF", background: "orange" }} disabled>Fee Nine Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-9" style={{ color: "#FFF", background: "green" }} disabled>Fee Nine Approved</option>
+                                    :
+                                    <option value="FeeReceipt-9">Fee Nine</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findFeeReceipt_10 !== undefined ?
+                                    findFeeReceipt_10 !== undefined && findFeeReceipt_10.rejected === true && findFeeReceipt_10.verified === true ?
+                                        <option value="FeeReceipt-10" style={{ color: "#FFF", background: "red" }}>Fee Ten (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findFeeReceipt_10.rejected === false && findFeeReceipt_10.verified === false ?
+                                            <option value="FeeReceipt-10" style={{ color: "#FFF", background: "orange" }} disabled>Fee Ten Approval Pending</option>
+                                            :
+                                            <option value="FeeReceipt-10" style={{ color: "#FFF", background: "green" }} disabled>Fee Ten Approved</option>
+                                    :
+                                    <option value="FeeReceipt-10">Fee Ten</option>
+                            }
+                        </CSelect>
+                    </CCol>
+                </CFormGroup>
+
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CBadge color="info">Upload whenever you pay the fee</CBadge>
+                    </CCol>
+                    <CCol xs="12" md="6">
+                        <div className="file">
+                            <CInputFile
+                                type="file"
+                                accept="image/png, image/jpeg, image/jpg"
+                                onChange={(e) => redFeeReceipt(e)}
+                                required
+                            />
+                        </div>
+                    </CCol>
+                    <CCol xs="12" md="3">
+                        <CButton color="primary" type="submit" disabled={feeReceiptLoading}>{feeReceiptLoading ? "Resizing" : "Submit"}</CButton>
+                    </CCol>
+                </CFormGroup>
+            </CForm>
+
+            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postOtherDocs(e)}>
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CLabel><strong>OTHER DOCS</strong></CLabel>
+                    </CCol>
+                    <CCol xs="12" md="6">
+                        <CSelect
+                            custom size="md"
+                            value={feeName}
+                            onChange={(e) => setOtherDocName(e.target.value)}
+                        >
+                            <option value="">Please select one</option>
+                            {
+                                docStatus && docStatus !== null && findOtherDocs_1 !== undefined ?
+                                    findOtherDocs_1 !== undefined && findOtherDocs_1.rejected === true && findOtherDocs_1.verified === true ?
+                                        <option value="OtherDocs-1" style={{ color: "#FFF", background: "red" }}>Other Doc One (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findOtherDocs_1.rejected === false && findOtherDocs_1.verified === false ?
+                                            <option value="OtherDocs-1" style={{ color: "#FFF", background: "orange" }} disabled>Other Doc One Approval Pending</option>
+                                            :
+                                            <option value="OtherDocs-1" style={{ color: "#FFF", background: "green" }} disabled>Other Doc One Approved</option>
+                                    :
+                                    <option value="OtherDocs-1">Other Doc One</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findOtherDocs_2 !== undefined ?
+                                    findOtherDocs_2 !== undefined && findOtherDocs_2.rejected === true && findOtherDocs_2.verified === true ?
+                                        <option value="OtherDocs-2" style={{ color: "#FFF", background: "red" }}>Other Doc Two (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findOtherDocs_2.rejected === false && findOtherDocs_2.verified === false ?
+                                            <option value="OtherDocs-2" style={{ color: "#FFF", background: "orange" }} disabled>Other Doc Two Approval Pending</option>
+                                            :
+                                            <option value="OtherDocs-2" style={{ color: "#FFF", background: "green" }} disabled>Other Doc Two Approved</option>
+                                    :
+                                    <option value="OtherDocs-2">Other Doc Two</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findOtherDocs_3 !== undefined ?
+                                    findOtherDocs_3 !== undefined && findOtherDocs_3.rejected === true && findOtherDocs_3.verified === true ?
+                                        <option value="OtherDocs-3" style={{ color: "#FFF", background: "red" }}>Other Doc Three (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findOtherDocs_3.rejected === false && findOtherDocs_3.verified === false ?
+                                            <option value="OtherDocs-3" style={{ color: "#FFF", background: "orange" }} disabled>Other Doc Three Approval Pending</option>
+                                            :
+                                            <option value="OtherDocs-3" style={{ color: "#FFF", background: "green" }} disabled>Other Doc Three Approved</option>
+                                    :
+                                    <option value="OtherDocs-3">Other Doc Three</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findOtherDocs_4 !== undefined ?
+                                    findOtherDocs_4 !== undefined && findOtherDocs_4.rejected === true && findOtherDocs_4.verified === true ?
+                                        <option value="OtherDocs-4" style={{ color: "#FFF", background: "red" }}>Other Doc Four (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findOtherDocs_4.rejected === false && findOtherDocs_4.verified === false ?
+                                            <option value="OtherDocs-4" style={{ color: "#FFF", background: "orange" }} disabled>Other Doc Four Approval Pending</option>
+                                            :
+                                            <option value="OtherDocs-4" style={{ color: "#FFF", background: "green" }} disabled>Other Doc Four Approved</option>
+                                    :
+                                    <option value="OtherDocs-4">Other Doc Four</option>
+                            }
+                            {
+                                docStatus && docStatus !== null && findOtherDocs_5 !== undefined ?
+                                    findOtherDocs_5 !== undefined && findOtherDocs_5.rejected === true && findOtherDocs_5.verified === true ?
+                                        <option value="OtherDocs-5" style={{ color: "#FFF", background: "red" }}>Other Doc Five (Rejected - Select this to Re-Upload File)</option>
+                                        :
+                                        findOtherDocs_5.rejected === false && findOtherDocs_5.verified === false ?
+                                            <option value="OtherDocs-5" style={{ color: "#FFF", background: "orange" }} disabled>Other Doc Five Approval Pending</option>
+                                            :
+                                            <option value="OtherDocs-5" style={{ color: "#FFF", background: "green" }} disabled>Other Doc Five Approved</option>
+                                    :
+                                    <option value="OtherDocs-5">Other Doc Five</option>
+                            }
+                        </CSelect>
+                    </CCol>
+                </CFormGroup>
+
+                <CFormGroup row>
+                    <CCol xs="12" md="3">
+                        <CBadge color="info">Upload If any nes</CBadge>
+                    </CCol>
+                    <CCol xs="12" md="6">
+                        <div className="file">
+                            <CInputFile
+                                type="file"
+                                accept="image/png, image/jpeg, image/jpg"
+                                onChange={(e) => redOtherDocs(e)}
+                                required
+                            />
+                        </div>
+                    </CCol>
+                    <CCol xs="12" md="3">
+                        <CButton color="primary" type="submit" disabled={otherDocsLoading}>{otherDocsLoading ? "Resizing" : "Submit"}</CButton>
+                    </CCol>
+                </CFormGroup>
+            </CForm>
+
+            {/* {
                 loading ?
                     <CProgress value={progress} showPercentage className="mb-3" /> :
                     <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postFeeReceipt(e)}>
@@ -1172,15 +1629,15 @@ function DocumentSubmission() {
                             </CCol>
                         </CFormGroup>
                     </CForm>
-            }
+            } */}
 
-            <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postOtherDocs(e)}>
+            {/* <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postOtherDocs(e)}>
                 <CFormGroup row>
                     <CCol xs="12" md="3">
                         <CLabel><strong>OTHER DOCUMENTS</strong></CLabel>
-                    </CCol>
+                    </CCol> */}
                     {/* <CBadge color="primary">Ignore if there aren't any</CBadge> */}
-                    <CCol xs="12" md="6">
+                    {/* <CCol xs="12" md="6">
                         <div className="file">
                             <CInputFile
                                 type="file"
@@ -1194,7 +1651,7 @@ function DocumentSubmission() {
                         <CButton color="primary" type="submit" disabled={otherDocsLoading}>{otherDocsLoading ? "Resizing" : "Submit"}</CButton>
                     </CCol>
                 </CFormGroup>
-            </CForm>
+            </CForm> */}
 
             {/* <CForm row className="form-horizontal" encType="multipart/form-data" onSubmit={(e) => postmulti(e)}>
                 <CBadge>UPLOAD MULTIPLE DOCS</CBadge>
