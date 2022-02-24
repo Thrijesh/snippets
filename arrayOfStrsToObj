@@ -1,0 +1,30 @@
+const value = [
+  "$$234.56",
+  "Ebill",
+  "05-02-2022",
+  2344,
+  98869878,
+  "Jack",
+  67876
+];
+
+const labelName = [
+  "CurrentDueAmount",
+  "ReminderType",
+  "Date",
+  "EBillId",
+  "AccountNumber",
+  "Name",
+  "PayeeId"
+];
+
+const neObj = [];
+let obj = {};
+
+for (var i = 0; i < labelName.length; i++) {
+  for (var j = 0; j < value.length; j++) {
+    obj[labelName[i]] = value[i];
+  }
+}
+
+console.log(obj);
